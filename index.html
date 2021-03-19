@@ -152,10 +152,10 @@
 				</div>
 			</div>
 		</div>
-		<main class="container-fluid pl-5 pr-0">
+		<main class="container-fluid">
 			<h4 class="mt-4 text-white">Trending Now</h4>
 			<div
-				class="row no-gutters row-cols-xs row-cols-md-4 row-cols-lg-3 mb-5"
+				class="row no-gutters row-cols-xs-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-6 mb-5"
 				id="curentMovies"
 			></div>
 
@@ -382,19 +382,35 @@
 					console.log(data);
 					//document.getElementById("loadingSpinner").classList.toggle("d-none");
 
-					//if (data.length > 0) {
-					data.forEach((movie) => {
-						curentMovies.innerHTML += `
+					data.forEach(async (category) => {
+						const response = await fetch(
+							"https://striveschool-api.herokuapp.com/api/movies/" + category,
+							{
+								headers: {
+									Authorization:
+										"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDUxZjliZDg5YzI2ZjAwMTU3ZjljMmUiLCJpYXQiOjE2MTU5ODUwODYsImV4cCI6MTYxNzE5NDY4Nn0.2480NnztYN4mpL6A_rXG-mu4VGcAIj-IfO5oJ8UnrXo",
+								},
+							}
+						);
+						const movies = await response.json();
+
+						movies.forEach((movie) => {
+							curentMovies.innerHTML += `
 			                                            <div class="col text-center mb-3 mb-lg-0 px-1">
-					                                        <img
+					                                        <a href="detail.html?category=${movie.category}&id=${movie._id}"><img
 						                                        class="img-fluid"
 						                                        src="${movie.imageUrl}"
-					                                        />
+					                                        /></a>
+                                                            <p>${movie.name}</p>
 				                                        </div>
 
 
 			                                                 `;
+						});
 					});
+
+					//if (data.length > 0) {
+					//data;
 					//} else {
 					//	curentMovies.innerHTML = `<h1>No Movies yet</h1>`;
 					//}

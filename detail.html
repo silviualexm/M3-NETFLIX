@@ -42,7 +42,7 @@
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul class="navbar-nav mr-auto">
 					<li class="nav-item active">
-						<a class="nav-link" href="index.html"
+						<a class="nav-link" href="#"
 							>Home <span class="sr-only">(current)</span></a
 						>
 					</li>
@@ -50,7 +50,7 @@
 						<a class="nav-link" href="index.html">Tv Shows</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="#">Movies</a>
+						<a class="nav-link" href="index.html">Movies</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="#">Recently Added</a>
@@ -100,58 +100,30 @@
 			</div>
 		</nav>
 		<div class="container text-center">
-			<h1 id="subTitle"></h1>
-			<h2>(backoffice)</h2>
+			<h1>This is our Netflix</h1>
+			<h2>The movie details</h2>
 			<div class="row">
-				<div class="col col-md-6 offset-md-3">
-					<form onsubmit="handleSubmit(event)">
-						<div class="form-group">
-							<label for="name">Movie name</label>
-							<input
-								id="name"
-								type="text"
-								class="form-control"
-								placeholder="Write the movie name here"
-								required
-							/>
-						</div>
-						<div class="form-group">
-							<label for="description">Movie description</label>
-							<textarea
-								id="description"
-								rows="4"
-								class="form-control"
-								placeholder="Write the movie description here"
-								required
-							></textarea>
-						</div>
-						<div class="form-group">
-							<label for="category">Movie category</label>
-							<input
-								id="category"
-								type="text"
-								class="form-control"
-								placeholder="Write the movie category here"
-								required
-							/>
-						</div>
-						<div class="form-group">
-							<label for="img">Movie image</label>
-							<input
-								id="img"
-								type="text"
-								class="form-control img-fluid"
-								placeholder="Put the url image here"
-								required
-							/>
-						</div>
-						<div class="form-group">
-							<button class="btn btn-primary" type="submit">
-								Submit movie
-							</button>
-						</div>
-					</form>
+				<div class="col" id="details">
+					<input
+						type="button"
+						class="btn btn-danger"
+						value="DELETE Movie"
+						onclick="handleDelete()"
+					/>
+					<input
+						type="button"
+						class="btn btn-success"
+						value="EDIT Movie"
+						onclick="handleEdit()"
+					/>
 				</div>
+			</div>
+			<div
+				id="loadingSpinner"
+				class="spinner-border text-primary d-none"
+				role="status"
+			>
+				<span class="sr-only">Loading...</span>
 			</div>
 		</div>
 
@@ -170,99 +142,83 @@
 		></script>
 
 		<script>
+			const url = "https://striveschool-api.herokuapp.com/api/movies/";
+
 			window.onload = async () => {
-				console.log("Page has been loaded...");
+				console.log("page has been loaded...");
+				console.log("the adress bar is: ", window.location.search);
+
+				let urlParams = new URLSearchParams(window.location.search);
+				let id = urlParams.get("id");
+				let category = urlParams.get("category");
+				console.log(id);
+				console.log(category);
+
+				try {
+					let response = await fetch(
+						"https://striveschool-api.herokuapp.com/api/movies/" + id,
+						{
+							headers: {
+								Authorization:
+									"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDUxZjliZDg5YzI2ZjAwMTU3ZjljMmUiLCJpYXQiOjE2MTU5ODUwODYsImV4cCI6MTYxNzE5NDY4Nn0.2480NnztYN4mpL6A_rXG-mu4VGcAIj-IfO5oJ8UnrXo",
+							},
+						}
+					);
+					console.log(response);
+
+					let movie = await response.json();
+
+					console.log("Single movie", movie);
+					let detail = document.getElementById("details");
+					detail.innerHTML += `
+			                 <div class="card mx-auto my-3" style="max-width: 540px;">
+			                     <div class="row no-gutters">
+			                          <div class="col-md-4">
+			                             <img class= "img-fluid" src="${movie.imageUrl}" alt="...">
+			                          </div>
+			                          <div class="col-md-8">
+			                             <div class="card-body">
+			                                 <h5 class="card-title">${movie.name}</h5>
+			                                 <p class="card-text">${movie.description}</p>
+			                                  <p class="card-text"><small class="text-danger">Genre: ${movie.category} </small></p>
+			                             </div>
+			                         </div>
+			                     </div>
+			                 </div>`;
+					document.getElementById("loadingSpinner").classList.toggle("d-none");
+				} catch (error) {
+					console.log(error);
+				}
+			};
+
+			const handleDelete = async () => {
 				const url = "https://striveschool-api.herokuapp.com/api/movies/";
 				let urlParams = new URLSearchParams(window.location.search);
-				id = urlParams.get("id");
-				console.log("Id is: ", id);
-				if (id) {
-					document.getElementById("subTitle").innerText = "EDIT MOVIE";
+				let id = urlParams.get("id");
+				console.log(id);
+				try {
 					let response = await fetch(url + id, {
+						method: "DELETE",
 						headers: {
 							Authorization:
 								"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDUxZjliZDg5YzI2ZjAwMTU3ZjljMmUiLCJpYXQiOjE2MTU5ODUwODYsImV4cCI6MTYxNzE5NDY4Nn0.2480NnztYN4mpL6A_rXG-mu4VGcAIj-IfO5oJ8UnrXo",
 						},
 					});
-					let movie = await response.json();
-					console.log(movie.category);
-
-					document.getElementById("name").value = movie.name;
-					document.getElementById("description").value = movie.description;
-					document.getElementById("category").value = movie.category;
-					document.getElementById("img").value = movie.imageUrl;
-				} else {
-					document.getElementById("subTitle").innerText = "CREATE MOVIE";
-				}
-			};
-
-			const handleSubmit = async (e) => {
-				e.preventDefault();
-				const url = "https://striveschool-api.herokuapp.com/api/movies/";
-				let urlParams = new URLSearchParams(window.location.search);
-				id = urlParams.get("id");
-				let myMovie = {
-					name: document.getElementById("name").value,
-					description: document.getElementById("description").value,
-					category: document.getElementById("category").value,
-					imageUrl: document.getElementById("img").value,
-				};
-
-				console.log(myMovie);
-
-				try {
-					// let res = await fetch(
-					// 	"https://striveschool-api.herokuapp.com/api/movies/",
-					// 	{
-					// 		headers: {
-					// 			Authorization:
-					// 				"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDUxZjliZDg5YzI2ZjAwMTU3ZjljMmUiLCJpYXQiOjE2MTU5ODUwODYsImV4cCI6MTYxNzE5NDY4Nn0.2480NnztYN4mpL6A_rXG-mu4VGcAIj-IfO5oJ8UnrXo",
-					// 			"Content-type": "application/json",
-					// 		},
-					// 	}
-					// );
-					// let cat = await res.json();
-					// console.log(cat);
-
-					//cat.forEach((el) => {
-
-					if (id) {
-						response = await fetch(url + id, {
-							method: "PUT",
-							body: JSON.stringify(myMovie),
-							headers: {
-								"Content-Type": "application/json",
-								Authorization:
-									"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDUxZjliZDg5YzI2ZjAwMTU3ZjljMmUiLCJpYXQiOjE2MTU5ODUwODYsImV4cCI6MTYxNzE5NDY4Nn0.2480NnztYN4mpL6A_rXG-mu4VGcAIj-IfO5oJ8UnrXo",
-							},
-						});
+					if (response.ok) {
+						alert("The movie deleted successufully");
+						window.location.assign("index.html");
 					} else {
-						let res = await fetch(
-							"https://striveschool-api.herokuapp.com/api/movies/",
-							{
-								method: "POST",
-								body: JSON.stringify(myMovie),
-								headers: {
-									Authorization:
-										"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDUxZjliZDg5YzI2ZjAwMTU3ZjljMmUiLCJpYXQiOjE2MTU5ODUwODYsImV4cCI6MTYxNzE5NDY4Nn0.2480NnztYN4mpL6A_rXG-mu4VGcAIj-IfO5oJ8UnrXo",
-									"Content-type": "application/json",
-								},
-							}
-						);
-						let data = await res.json();
-						if (res.ok) {
-							alert(`The movie was added successfully`);
-							window.location.assign("index.html");
-						} else {
-							alert("something went wrong");
-						}
+						alert("something went wrong!");
 					}
-					console.log(res);
-
-					//});
 				} catch (error) {
 					console.log(error);
 				}
+			};
+
+			const handleEdit = () => {
+				let urlParams = new URLSearchParams(window.location.search);
+				let id = urlParams.get("id");
+				window.location.assign("backoffice.html?id=" + id);
 			};
 		</script>
 
