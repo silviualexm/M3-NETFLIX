@@ -58,8 +58,9 @@ img {
 	transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 footer .main-footer {
-	padding: 20px 0;
+	padding: 0;
 	background: #141414;
+	font-size: small;
 }
 footer ul {
 	padding-left: 0;
@@ -148,7 +149,7 @@ footer.light .footer-copyright {
 .widget.no-box {
 	padding: 0;
 	background-color: transparent;
-	margin-bottom: 40px;
+	margin: 0px;
 	box-shadow: none;
 	-webkit-box-shadow: none;
 	-moz-box-shadow: none;
